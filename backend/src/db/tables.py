@@ -19,7 +19,7 @@ class User(Base):
     )
     login: Mapped[str]
     hash_password: Mapped[str]
-    sentimental_reports: Mapped["SentimentalReport"] = relationship(back_populates="user",
+    sentimental_reports: Mapped[list["SentimentalReport"]] = relationship(back_populates="user",
                                                                     lazy="selectin",
                                                                     cascade="all, delete")
 
@@ -33,8 +33,7 @@ class SentimentalReport(Base):
     __tablename__ = "sentimental_reports"
 
     id: Mapped[uuid.UUID] = mapped_column(
-        primary_key=True,
-        server_default=text('gen_random_uuid()')
+        primary_key=True
     )
     filepath: Mapped[str] = mapped_column(nullable=False)
     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))

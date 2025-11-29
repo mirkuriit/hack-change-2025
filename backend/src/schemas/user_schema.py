@@ -12,7 +12,7 @@ class UserCreate(BaseModel):
 class UserReadWithReport(BaseModel):
     id: uuid.UUID
     login: str
-    sentimental_report: SentimentalReportBase
+    sentimental_reports: list[SentimentalReportBase]
 
     class Config:
         orm_mode = True

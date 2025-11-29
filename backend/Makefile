@@ -1,22 +1,27 @@
 #!/usr/bin/make
 
-SHELL = /bin/bash
-
-include .env
+ifneq ($(if $(MAKECMDGOALS),$(words $(MAKECMDGOALS)),1),1)
+.SUFFIXES:
+TARGET := $(if $(findstring :,$(firstword $(MAKECMDGOALS))),,$(firstword $(MAKECMDGOALS)))
+PARAMS := $(if $(findstring :,$(firstword $(MAKECMDGOALS))),$(MAKECMDGOALS),$(wordlist 2,100000,$(MAKECMDGOALS)))
+.DEFAULT_GOAL = help
+.PHONY: ONLY_ONCE
+ONLY_ONCE:
+	$(MAKE) $(TARGET) COMMAND_ARGS="$(PARAMS)"
+%: ONLY_ONCE
+	@:
+else
 
 postgres-run:
- 	docker compose up -d
-# 	sleep 5
-# # 	poetry run drop-db
-# 	poetry run init-db
-# # 	poetry run alembic upgrade head
-
+	docker compose up -d
 
 dev:
-	poetry run uvicorn file_storage_api.app.main:app --reload --port 8000 --host 0.0.0.0
+	uv run uvicorn src.main:app --reload --port 8000 --host 0.0.0.0
 
 up: postgres-run dev
 
 shutdown:
 	docker stop postgres
 	docker rm postgres
+
+endif

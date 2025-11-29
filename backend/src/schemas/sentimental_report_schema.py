@@ -3,17 +3,20 @@ from pydantic import BaseModel
 
 
 class SentimentalReportBase(BaseModel):
-    filepath: str
-
-class SentimentalReportCreate(BaseModel):
-    filepath: str
-    user_id: uuid.UUID
-
-
-class SentimentalReportRead(BaseModel):
-    id: uuid.UUID
-    filepath: str
-    user_id: uuid.UUID
-
     class Config:
-        orm_mode = True
+        fron_attributes = True
+
+
+class SentimentalReportCreate(SentimentalReportBase):
+    user_id: uuid.UUID
+    id: uuid.UUID
+
+
+class SentimentalReportRead(SentimentalReportBase):
+    id: uuid.UUID
+
+
+class SentimentalReportReadPreds(SentimentalReportBase):
+    id: uuid.UUID
+    prediction: dict[str, list]
+
