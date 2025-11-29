@@ -1,26 +1,41 @@
 import torch
 from sklearn.metrics import f1_score
+from sklearn.metrics import precision_score, recall_score, f1_score
 
 device = 'cpu'
 
-def F1macro(model, val_dataloader) -> float:
-    predictions = []
-    target = []
+def metrics_per_class(model, val_dataloader, device):
     model.eval()
+    predictions = []
+    targets = []
 
     with torch.no_grad():
         for batch in val_dataloader:
-            logits = model(batch['input_ids'].to(device))
-            predictions.append(logits.argmax(dim=1))
-            target.append(batch['label'].to(device))
+            input_ids = batch['input_ids'].to(device)
+            labels = batch['label'].to(device)
+            logits = model(input_ids)
+            preds = logits.argmax(dim=1)
+
+            predictions.append(preds)
+            targets.append(labels)
 
     predictions = torch.cat(predictions).cpu().numpy()
-    target = torch.cat(target).cpu().numpy()
+    targets = torch.cat(targets).cpu().numpy()
 
-    macro_f1 = f1_score(predictions, target, average='macro')
+    precision = precision_score(targets, predictions, average=None)
+    recall = recall_score(targets, predictions, average=None)
+    f1 = f1_score(targets, predictions, average=None)
 
-    return macro_f1
+    metrics_dict = {}
+    num_classes = len(precision)
+    for i in range(num_classes):
+        metrics_dict[i] = {
+            'precision': float(precision[i]),
+            'recall': float(recall[i]),
+            'f1': float(f1[i]),
+        }
 
+    return metrics_dict
 
 def accuracy(model, val_dataloader):
     model.eval()
