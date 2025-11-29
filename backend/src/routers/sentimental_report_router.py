@@ -1,3 +1,4 @@
+import pandas as pd
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi import UploadFile, File, Form
 from fastapi.responses import FileResponse
@@ -18,7 +19,7 @@ import uuid
 router = APIRouter(prefix="/reports", tags=["Sentimental Reports"])
 
 
-@router.post("/", response_model=SentimentalReportReadPreds)
+@router.post("/", response_model=SentimentalReportCreate)
 async def create_report(
     input_file: UploadFile = File(...),
     report_service: SentimentalReportService = Depends(get_report_service),
@@ -31,23 +32,42 @@ async def create_report(
 
     await report_service.create(report)
 
+    ### TODO добавить мл
     with open(Path(config.DATA_PATH) / (str(report.id) + ".csv"), "wb") as f:
         f.write(await input_file.read())
 
-    ### TODO добавить мл
-    prediction = {"text" : ["meow", "очень хуевыое обсулживание", "гойда"],
-                         "label" : ["neutral", "positive", "negative"]}
-    return SentimentalReportReadPreds(id=report.id,
-                                      prediction=prediction)
+    return report
 
 
 @router.get("/csv/{report_id}", response_model=SentimentalReportRead)
-async def download_report(
+async def download_report_csv(
     report_id: uuid.UUID,
     current_user: User = Depends(get_authorized_user)
 ):
     filepath = Path(config.DATA_PATH) / (str(report_id) + ".csv")
     return FileResponse(path=filepath, filename='classification_results.csv', media_type='multipart/form-data')
+
+### TODO заменить на мл
+def predict(data):
+    return len(data) * [0]
+
+def csv2json(path: Path):
+    data = pd.read_csv(path)
+    data["label"] = predict(data)
+    #print(data)
+    #print(data.to_dict("records"))
+    return data.to_dict("records")
+
+@router.get("/json/{report_id}", response_model=SentimentalReportReadPreds)
+async def get_report_json(
+    report_id: uuid.UUID,
+    current_user: User = Depends(get_authorized_user)
+):
+    filepath = Path(config.DATA_PATH) / (str(report_id) + ".csv")
+    predictions = csv2json(filepath)
+    #print(predictions)
+    report = SentimentalReportReadPreds(id=report_id, prediction=predictions)
+    return report
 
 
 

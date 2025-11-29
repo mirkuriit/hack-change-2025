@@ -1,6 +1,7 @@
 import uuid
 import datetime as dt
 from pydantic import BaseModel
+from typing import Literal
 
 
 class SentimentalReportBase(BaseModel):
@@ -19,7 +20,14 @@ class SentimentalReportRead(SentimentalReportBase):
     created_at: dt.datetime
 
 
+class SentimentPrediction(BaseModel):
+    ID: int
+    text: str
+    src: str
+    label: Literal[0, 1, 2]
+
+
 class SentimentalReportReadPreds(SentimentalReportBase):
     id: uuid.UUID
-    prediction: dict[str, list]
+    prediction: list[SentimentPrediction]
 
