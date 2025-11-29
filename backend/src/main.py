@@ -1,12 +1,19 @@
 from fastapi import FastAPI
-
+from contextlib import asynccontextmanager
 from src.config import config
 
 from fastapi.middleware.cors import CORSMiddleware
+from src.db.initial import create_tables
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    create_tables()
+    yield
 
 def create_app() -> FastAPI:
-    app = FastAPI(docs_url=f'/{config.API_PREFIX}/docs')
+    app = FastAPI(docs_url=f'/{config.API_PREFIX}/docs',
+                  lifespan=lifespan)
 
     from src.routers.user_router import router as user_router
     from src.routers.sentimental_report_router import router as report_router
@@ -25,6 +32,9 @@ def create_app() -> FastAPI:
     )
 
     return app
+
+
+
 
 
 app = create_app()

@@ -7,9 +7,9 @@ class Settings(BaseSettings):
     POSTGRES_PORT: str = os.getenv("POSTGRES_PORT", "5432")
     POSTGRES_USER: str = os.getenv("POSTGRES_USER", "postgres")
     POSTGRES_PASSWORD: str = os.getenv("POSTGRES_PASSWORD", "password")
-    POSTGRES_DB: str = os.getenv("POSTGRES_DB", "")
-    API_PREFIX: str = os.getenv("API_PREFIX")
-    DATA_PATH: str = os.getenv("DATA_PATH")
+    POSTGRES_DB: str = os.getenv("POSTGRES_DB", "sentimental_db")
+    API_PREFIX: str = os.getenv("API_PREFIX", "/sentimental-api")
+    DATA_PATH: str = os.getenv("DATA_PATH", "src/data/")
 
     @computed_field(return_type=str)
     def sync_db_connection(self):
