@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     POSTGRES_DB: str = os.getenv("POSTGRES_DB", "sentimental_db")
     API_PREFIX: str = os.getenv("API_PREFIX", "/sentimental-api")
     DATA_PATH: str = os.getenv("DATA_PATH", "src/data/")
+    JWT_SECRET: str = os.getenv("JWT_SECRET", "meowmeow")
 
     @computed_field(return_type=str)
     def sync_db_connection(self):

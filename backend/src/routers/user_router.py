@@ -4,6 +4,8 @@ from src.services.user_service import UserService
 from src.services.user_service import  get_user_service
 import uuid
 
+from src.security import verify_password, create_access_token
+
 router = APIRouter(prefix="/users", tags=["Users"])
 
 
@@ -16,6 +18,22 @@ async def create_user(
     if user:
         raise HTTPException(400, "User already exists")
     return await service.create(data)
+
+
+@router.post("/login")
+async def login_in(
+    login: str,
+    password: str,
+    service: UserService = Depends(get_user_service)
+):
+    user = await service.get_by_login(login)
+    if user is None:
+        raise HTTPException(404, detail="incorrect password or login")
+    if verify_password(password, str(user.hash_password)):
+        return {"access_token" : create_access_token({"sub" : str(user.id)})}
+    else:
+        raise HTTPException(401, detail="incorrect password or login")
+
 
 
 @router.get("/{user_id}", response_model=UserReadWithReport)

@@ -9,6 +9,8 @@ from src.services.user_service import UserService
 from src.services.sentimental_report_service import get_report_service
 from src.services.user_service import get_user_service
 
+
+from src.security import User, get_authorized_user
 from src.config import config
 from pathlib import Path
 import uuid
@@ -19,13 +21,13 @@ router = APIRouter(prefix="/reports", tags=["Sentimental Reports"])
 @router.post("/", response_model=SentimentalReportReadPreds)
 async def create_report(
     input_file: UploadFile = File(...),
-    user_id: uuid.UUID = Form(...),
     report_service: SentimentalReportService = Depends(get_report_service),
     user_service: UserService = Depends(get_user_service),
+    current_user: User = Depends(get_authorized_user)
 ):
-    user = await user_service.get(user_id)
+    user = await user_service.get(current_user.id)
 
-    report = SentimentalReportCreate(user_id=user_id, id=uuid.uuid4())
+    report = SentimentalReportCreate(user_id=current_user.id, id=uuid.uuid4())
 
     await report_service.create(report)
 
@@ -42,6 +44,7 @@ async def create_report(
 @router.get("/csv/{report_id}", response_model=SentimentalReportRead)
 async def download_report(
     report_id: uuid.UUID,
+    current_user: User = Depends(get_authorized_user)
 ):
     filepath = Path(config.DATA_PATH) / (str(report_id) + ".csv")
     return FileResponse(path=filepath, filename='classification_results.csv', media_type='multipart/form-data')

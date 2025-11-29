@@ -8,6 +8,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.db.session import get_session
 from sqlalchemy.orm import selectinload
 
+from src.security import get_password_hash
+
 
 class UserService:
     def __init__(self, session: AsyncSession):
@@ -45,7 +47,7 @@ class UserService:
         return result.scalars()
 
     def _hash_password(self, password: str) -> str:
-        return password[::-1]
+        return get_password_hash(str(password))
 
 
 def get_user_service(
