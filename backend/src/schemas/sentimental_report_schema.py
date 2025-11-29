@@ -1,4 +1,5 @@
 import uuid
+import datetime as dt
 from pydantic import BaseModel
 
 
@@ -15,6 +16,7 @@ class SentimentalReportCreate(SentimentalReportBase):
 class SentimentalReportRead(SentimentalReportBase):
     id: uuid.UUID
     user_id: uuid.UUID
+    created_at: dt.datetime
 
 
 class SentimentalReportReadPreds(SentimentalReportBase):
