@@ -48,7 +48,7 @@ async def get_user(
         raise HTTPException(404, "User not found")
     return user
 
-@router.get("/", response_model=list[UserRead])
+@router.get("/", response_model=list[UserReadWithReport])
 async def get_users(
     service: UserService = Depends(get_user_service)
 ):

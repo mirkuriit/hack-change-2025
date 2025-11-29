@@ -1,7 +1,7 @@
 import uuid
 from pydantic import BaseModel
 
-from src.schemas.sentimental_report_schema import SentimentalReportBase
+from src.schemas.sentimental_report_schema import SentimentalReportBase, SentimentalReportRead
 
 
 class UserCreate(BaseModel):
@@ -12,7 +12,7 @@ class UserCreate(BaseModel):
 class UserReadWithReport(BaseModel):
     id: uuid.UUID
     login: str
-    sentimental_reports: list[SentimentalReportBase]
+    sentimental_reports: list[SentimentalReportRead]
 
     class Config:
         orm_mode = True

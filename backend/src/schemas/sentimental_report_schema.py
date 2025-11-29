@@ -14,6 +14,7 @@ class SentimentalReportCreate(SentimentalReportBase):
 
 class SentimentalReportRead(SentimentalReportBase):
     id: uuid.UUID
+    user_id: uuid.UUID
 
 
 class SentimentalReportReadPreds(SentimentalReportBase):
