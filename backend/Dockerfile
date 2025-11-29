@@ -2,7 +2,7 @@ FROM python:3.13-slim
 
 WORKDIR /src
 
-RUN mkdir -p /src/data
+RUN mkdir -p /src/data && chmod -R 777 /src/data
 
 COPY . /src
 

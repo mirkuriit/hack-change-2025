@@ -19,8 +19,8 @@ services:
       - "8000:8000"
     depends_on:
       - postgres
-    volumes:
-      - ./src/data:/src/data
+#    volumes:
+#      - ./src/data:/src/data
 
   postgres:
     image: postgres:latest
