@@ -12,6 +12,8 @@
 
 Веб сервис для предсказания тональности русскоязычного текста.
 
+![alt text](image.png)
+
 Видеодемонстрация https://drive.google.com/file/d/1kvvuOG0ksr0byXoMmisMma62OpZPq3sJ/view?usp=sharing
 
 
