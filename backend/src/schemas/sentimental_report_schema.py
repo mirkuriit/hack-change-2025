@@ -29,5 +29,6 @@ class SentimentPrediction(BaseModel):
 
 class SentimentalReportReadPreds(SentimentalReportBase):
     id: uuid.UUID
+    created_at: dt.datetime
     prediction: list[SentimentPrediction]
 

@@ -3,7 +3,8 @@ from src.schemas.sentimental_schema import (
     SentimentalCreateFromOne, SentimentalGet, SentimentalCalculatedF1Get
 )
 from fastapi import UploadFile, File
-from src.services.sentimental_predictor import get_predict_sentimental_service, SentimentalPredictor
+from src.ml.predict_utils import model, predict, tokenizer, get_metrics_by_train
+import pandas as pd
 
 router = APIRouter(prefix="/predict-one", tags=["Sentimental"])
 
@@ -11,20 +12,22 @@ router = APIRouter(prefix="/predict-one", tags=["Sentimental"])
 @router.post("/", response_model=SentimentalGet)
 async def predict_one(
     data: SentimentalCreateFromOne,
-    predict_service: SentimentalPredictor = Depends(get_predict_sentimental_service)
 ):
-    ### TODO добавить мл
-    result = predict_service.predict_from_one(data.text)
+    result = predict(model, tokenizer,text=data.text)
 
     return SentimentalGet(predicted_mark=result, text=data.text)
 
 
-@router.post("/f1", response_model=SentimentalCalculatedF1Get)
+@router.post("/f1")
 async def predict_f1(
     input_file: UploadFile = File(...),
-    predict_service: SentimentalPredictor = Depends(get_predict_sentimental_service)
 ):
     ### TODO добавить мл
-    result = predict_service.predict_f1(input_file)
+    contents = await input_file.read()
+    data = pd.read_csv(pd.io.common.BytesIO(contents))
 
-    return SentimentalCalculatedF1Get(f1=result)
+
+    result = get_metrics_by_train(model, data)
+
+    #return SentimentalCalculatedF1Get(f1=result)
+    return result

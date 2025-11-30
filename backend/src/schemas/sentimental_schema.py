@@ -14,7 +14,7 @@ class SentimentalCreateFromOne(BaseSentimental):
 
 
 class SentimentalGet(BaseSentimental):
-    predicted_mark: Literal["negative", "neutral", "positive"]
+    predicted_mark: Literal[0, 1, 2]
     text: str
 
 

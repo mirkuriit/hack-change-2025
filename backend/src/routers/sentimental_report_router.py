@@ -10,6 +10,8 @@ from src.services.user_service import UserService
 from src.services.sentimental_report_service import get_report_service
 from src.services.user_service import get_user_service
 
+from src.ml.predict_utils import model, predict, predict_for_table
+
 
 from src.security import User, get_authorized_user
 from src.config import config
@@ -32,10 +34,11 @@ async def create_report(
 
     await report_service.create(report)
 
-    ### TODO добавить мл
-    with open(Path(config.DATA_PATH) / (str(report.id) + ".csv"), "wb") as f:
+    predictions_path = Path(config.DATA_PATH) / (str(report.id) + ".csv")
+    with open(predictions_path, "wb") as f:
         f.write(await input_file.read())
 
+    predict_for_table(model=model, path_to_table=predictions_path, path_to_save=predictions_path)
     return report
 
 
@@ -47,26 +50,18 @@ async def download_report_csv(
     filepath = Path(config.DATA_PATH) / (str(report_id) + ".csv")
     return FileResponse(path=filepath, filename='classification_results.csv', media_type='multipart/form-data')
 
-### TODO заменить на мл
-def predict(data):
-    return len(data) * [0]
-
-def csv2json(path: Path):
-    data = pd.read_csv(path)
-    data["label"] = predict(data)
-    #print(data)
-    #print(data.to_dict("records"))
-    return data.to_dict("records")
-
 @router.get("/json/{report_id}", response_model=SentimentalReportReadPreds)
 async def get_report_json(
     report_id: uuid.UUID,
-    current_user: User = Depends(get_authorized_user)
+    current_user: User = Depends(get_authorized_user),
+    service: SentimentalReportService = Depends(get_report_service)
 ):
     filepath = Path(config.DATA_PATH) / (str(report_id) + ".csv")
-    predictions = csv2json(filepath)
+    predictions = pd.read_csv(filepath).to_dict("records")
     #print(predictions)
-    report = SentimentalReportReadPreds(id=report_id, prediction=predictions)
+    report_orm = await service.get(report_id)
+
+    report = SentimentalReportReadPreds(id=report_id, created_at=report_orm.created_at, prediction=predictions)
     return report
 
 
