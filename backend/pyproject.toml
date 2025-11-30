@@ -21,6 +21,7 @@ dependencies = [
     "scikit-learn>=1.7.2",
     "sqlalchemy>=2.0.44",
     "torch>=2.9.1",
+    "transformers>=4.57.3",
     "uvicorn>=0.38.0",
 ]
 

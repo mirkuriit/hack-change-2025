@@ -10,7 +10,8 @@ from src.services.user_service import UserService
 from src.services.sentimental_report_service import get_report_service
 from src.services.user_service import get_user_service
 
-from src.ml.predict_utils import model, predict, predict_for_table
+from src.ml.model import model, tokenizer
+from src.ml.predict_for_table import predict_for_table
 
 
 from src.security import User, get_authorized_user
@@ -38,7 +39,7 @@ async def create_report(
     with open(predictions_path, "wb") as f:
         f.write(await input_file.read())
 
-    predict_for_table(model=model, path_to_table=predictions_path, path_to_save=predictions_path)
+    predict_for_table(model=model, tokenizer=tokenizer, path_to_table=predictions_path, path_to_save=predictions_path)
     return report
 
 
@@ -58,7 +59,7 @@ async def get_report_json(
 ):
     filepath = Path(config.DATA_PATH) / (str(report_id) + ".csv")
     predictions = pd.read_csv(filepath).to_dict("records")
-    #print(predictions)
+    print(predictions)
     report_orm = await service.get(report_id)
 
     report = SentimentalReportReadPreds(id=report_id, created_at=report_orm.created_at, prediction=predictions)

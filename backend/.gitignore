@@ -4,10 +4,12 @@ src/ml/save_data.pkl
 __pycache__/
 *.py[codz]
 *$py.class
-
+src/ml/*.zip
 # C extensions
 *.so
-
+src/ml/rubert_local
+src/ml/rubert_tokenizer_local
+src/ml/full_model_weights.pt
 # Distribution / packaging
 .Python
 build/

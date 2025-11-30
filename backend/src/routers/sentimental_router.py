@@ -3,7 +3,9 @@ from src.schemas.sentimental_schema import (
     SentimentalCreateFromOne, SentimentalGet, SentimentalCalculatedF1Get
 )
 from fastapi import UploadFile, File
-from src.ml.predict_utils import model, predict, tokenizer, get_metrics_by_train
+from src.ml.model import tokenizer,model
+from src.ml.get_metrics_by_train import get_metrics_by_train
+from src.ml.predict_label import predict_label
 import pandas as pd
 
 router = APIRouter(prefix="/predict-one", tags=["Sentimental"])
@@ -13,7 +15,7 @@ router = APIRouter(prefix="/predict-one", tags=["Sentimental"])
 async def predict_one(
     data: SentimentalCreateFromOne,
 ):
-    result = predict(model, tokenizer,text=data.text)
+    result = predict_label(model, tokenizer, texts=data.text)
 
     return SentimentalGet(predicted_mark=result, text=data.text)
 
