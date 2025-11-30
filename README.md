@@ -34,7 +34,7 @@ https://hack-change-2025-lurq.vercel.app/
 - Загрузка размеченного CSV для получения расчитанных метрик (показ macro‑F1 + precision/recall/F1 по каждому классу )
 
 
-## BACKEND
+## BACKEND with ruBERT
 
 Настройка переменных окружения
 ```
@@ -80,6 +80,22 @@ backend/
     └── services # сервисный слой
         └── ...
 ```
+
+## BACKEND with custom rnn
+
+Настройка переменных окружения
+```
+cd backend
+cp example.env .env
+```
+
+Сборка и запуск бекенда:
+
+```
+docker compose up --build
+```
+
+структура аналогична бекенду с ruBERT`ом
 
 ## Frontend
 
