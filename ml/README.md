@@ -1,2 +1,2 @@
 Веса модели
-https://drive.google.com/drive/folders/119CrBe75bmdjjq10KnzeacMdE9X3GqLq?usp=sharing
+https://drive.google.com/drive/folders/1FMI1DU-I_-SKcuS86Hot4BkNMQKEwA_q?usp=sharing
