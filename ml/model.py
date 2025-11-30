@@ -1,39 +1,12 @@
+from transformers import AutoModelForSequenceClassification, AutoTokenizer
 import torch
-import torch.nn as nn
 
-class BaseModel(nn.Module):
-    def __init__(
-        self, hidden_dim, vocab_size, num_classes,
-        aggregation_type: str = 'max', lstm_layers: int = 1
-        ):
-        super().__init__()
-        self.embedding = nn.Embedding(vocab_size, hidden_dim)
-        self.gru = nn.LSTM(hidden_dim, hidden_dim, num_layers=lstm_layers, bidirectional=True)
-        self.linear = nn.Linear(hidden_dim * 2 * 2, hidden_dim)
-        self.projection = nn.Linear(hidden_dim, num_classes)
+device = 'cpu'
 
-        self.non_lin = nn.Tanh()
-        self.dropout = nn.Dropout(p=0.3)
+model = AutoModelForSequenceClassification.from_pretrained("./rubert_local").to(device)
 
-        self.aggregation_type = aggregation_type
+state_dict = torch.load("./full_model_weights.pt", map_location=device)
+model.load_state_dict(state_dict)
+model.eval()
 
-    def forward(self, input_batch) -> torch.Tensor:
-        embeddings = self.embedding(input_batch)
-        output, _Ве = self.gru(embeddings)
-
-        if self.aggregation_type == 'max':
-            output = output.max(dim=1)[0]
-        elif self.aggregation_type == 'mean':
-            output = output.mean(dim=1)
-        elif self.aggregation_type == 'max+mean':
-            max_pool = output.max(dim=1)[0]
-            mean_pool = output.mean(dim=1)
-
-            output = torch.cat([max_pool, mean_pool], dim=1)
-        else:
-            raise ValueError("Invalid aggregation_type")
-
-        output = self.dropout(self.linear(self.non_lin(output)))
-        prediction = self.projection(self.non_lin(output))
-
-        return prediction
+tokenizer = AutoTokenizer.from_pretrained("./rubert_tokenizer_local")
