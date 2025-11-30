@@ -58,16 +58,10 @@ def predict_for_table(model, path_to_table, path_to_save):
     table_df.to_csv(path_to_save, index=False)
 
 
-with open('save_data.pkl', 'rb') as file:
-    save_data = pickle.load(file)
-
-model, word2ind = save_data
-model.to('cpu')
-
 print(
     predict(model, tokenizer, "Отличный товар! Так и тянеть сьесть!")
 )
-print(
-    get_metrics_by_train(model, pd.read_csv('train_first_1000.csv'))
-)
+# print(
+#     get_metrics_by_train(model, pd.read_csv('train_first_1000.csv'))
+# )
 # predict_for_table(model, "./test_first_1000.csv", "predicted_table")

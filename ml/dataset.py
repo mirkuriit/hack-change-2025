@@ -1,13 +1,9 @@
 import pickle
 from tokenizer import *
 import torch
+from loader import *
 
-device = 'cpu'
 
-with open('save_data.pkl', 'rb') as file:
-    save_data = pickle.load(file)
-
-model, word2ind = save_data
 
 tokenizer = MyTokenizer(word2ind)
 
