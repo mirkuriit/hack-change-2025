@@ -30,4 +30,5 @@ async def predict_f1(
     result = get_metrics_by_train(model, data)
 
     #return SentimentalCalculatedF1Get(f1=result)
-    return result
+    print(result)
+    return {"f1-macro": sum([result.get(0).get("f1"), result.get(1).get("f1"), result.get(2).get("f1")]) / 3} | result
