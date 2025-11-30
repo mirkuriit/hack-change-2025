@@ -85,7 +85,7 @@ backend/
 
 Настройка переменных окружения
 ```
-cd backend
+cd custom_rnn_backend
 cp example.env .env
 ```
 
